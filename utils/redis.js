@@ -7,51 +7,22 @@ const util = require('util');
 class RedisClient {
   constructor() {
     const client = redis.createClient();
-    client.on('error', (err) => console.log());
+    client.on('error', () => console.log());
     this.client = client;
-    client.on('connect', () => this.client = client);
-    /*client.on('connect', (err) => {
-      if (!err) {
-        console.log(true)
-        this.connected = true;
-      } else {
-        this.connected = false;
-      }
-    });*/
+    client.on('connect', () => {
+      this.client = client;
+    });
   }
 
-  /*isAlive() {
-    //const connect = util.promisify(this.client.on).bind(this.client);
-    return (async (client) => {
-        async function connect() {
-          client.on('connect', (err) => {
-            if (!err) {
-                return true;
-            } else {
-                return false;
-            } 
-          });
-        }
-        await connect()
-          .then((err) => {
-            return true
-          });
-    })(this.client);
-  }*/
-
   isAlive() {
-    try {
-      console.log(this.client.connected, "Working");
-      return true;
-    } catch(err) {
-      console.log(err)
-      return false;
-    }
+    const id = this.client.connection_id;
+    return true;
   }
 
   async get(key) {
     const getKey = util.promisify(this.client.get).bind(this.client);
-    return await getKey(key);
+    const retVal = await getKey(key);
+    return retVal;
   }
 
   async set(key, value, duration) {
