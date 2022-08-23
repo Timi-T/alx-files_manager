@@ -1,54 +1,51 @@
 // Logic for users endpoints
 
+const sha1 = require('sha1');
+
+const { ObjectId } = require('mongodb');
+
 const dbClient = require('../utils/db');
 
 const redisClient = require('../utils/redis');
 
-const crypto = require('crypto');
-
-const { ObjectId } = require('mongodb');
-
-function sha1(password) {
-  return crypto.createHash("sha1").update(password, "binary").digest("hex");
-}
-
 class UsersController {
   async postNew(req, res) {
-    const email = req.body.email;
+    const { email } = req.body;
+    this.email = email;
     if (!email) {
-      res.status(400).send({'error': 'Missing email'});
-      return
+      res.status(400).send({ error: 'Missing email' });
+      return;
     }
-    const password = req.body.password;
+    const { password } = req.body;
     if (!password) {
-      res.status(400).send({'error': 'Missing password'});
-      return
+      res.status(400).send({ error: 'Missing password' });
+      return;
     }
-    const userExists = await dbClient.get('users', {'email': email});
+    const userExists = await dbClient.get('users', { email });
     if (userExists.length > 0) {
-      res.status(400).send({'error': 'Already exist'});
-      return
+      res.status(400).send({ error: 'Already exist' });
+      return;
     }
     const hashPwd = sha1(password);
-    const document = {'email': email, 'password': hashPwd};
+    const document = { email, password: hashPwd };
     const user = await dbClient.add('users', document);
-    //console.log(user.insertedId);
-    res.status(200).send({'id': user.insertedId, 'email': email});
+    res.status(200).send({ id: user.insertedId, email });
   }
 
   async getMe(req, res) {
     const token = req.headers['x-token'];
+    this.token = token;
     const userID = await redisClient.get(`auth_${token}`);
     if (!userID) {
-        res.status(401).send({'error': 'Unauthorized'});
-        return
+      res.status(401).send({ error: 'Unauthorized' });
+      return;
     }
-    const userData = await dbClient.get('users', {'_id': ObjectId(userID)});
+    const userData = await dbClient.get('users', { _id: ObjectId(userID) });
     if (userData.length > 0) {
       const user = userData[0];
-      res.status(200).send({'id': user._id, 'email': user.email})
+      res.status(200).send({ id: user._id, email: user.email });
     } else {
-      res.status(401).send({'error': 'Unauthorized'});
+      res.status(401).send({ error: 'Unauthorized' });
     }
   }
 }
