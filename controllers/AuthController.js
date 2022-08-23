@@ -20,7 +20,7 @@ class AuthController {
       const user = userData[0];
       const hashPwd = user.password;
       if (sha1(password) !== hashPwd) {
-        res.status(401).send('Unauthorized');
+        res.status(401).send({ error: 'Unauthorized' });
       } else {
         const token = uuid();
         const key = `auth_${token}`;
@@ -28,7 +28,7 @@ class AuthController {
         res.status(200).send({ token });
       }
     } else {
-      res.status(401).send('Unauthorized');
+      res.status(401).send({ error: 'Unauthorized' });
     }
   }
 
