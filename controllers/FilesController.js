@@ -162,7 +162,7 @@ class FilesController {
         try {
           parentID = Number(parentID);
           page = Number(page);
-          const filesData = await dbClient.paginate('files', page, { userId: ObjectId(user._id), parentID });
+          const filesData = await dbClient.paginate('files', page, { userId: ObjectId(user._id), parentId: parentID });
           res.status(200).send(filesData);
           return;
         } catch (err) {
@@ -247,7 +247,7 @@ class FilesController {
             return;
           }
           const mimeType = mimes.lookup(file.name);
-          res.setHeader('content-type', mimeType);
+          res.setHeader('MIME-type', mimeType);
           if (size) {
             if (!fs.existsSync(`${file.localPath}_${size}`)) {
               res.status(404).send({ error: 'Not found' });
