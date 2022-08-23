@@ -16,6 +16,9 @@ class RedisClient {
 
   isAlive() {
     const id = this.client.connection_id;
+    if (!id) {
+      return true;
+    }
     return true;
   }
 
