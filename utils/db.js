@@ -9,25 +9,17 @@ class DBClient {
     const database = process.env.DB_DATABASE || 'files_manager';
     const uri = `mongodb://${host}:${port}`;
     const client = new MongoClient(uri);
-    client.connect()
+    client.connect();
     this.client = client;
     this.database = database;
   }
 
   isAlive() {
-    return true
-    /*try {
-    this.client.connect()
-      .then(() => {
-        return true;
-      })
-      .catch(() => {
-        return false;
-      })
-    } catch(err) {
-      console.log(FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFUUUUUUUUUUUUUUUUUUU)
-      return false;
-    }*/
+    const id = this.client.connection_id;
+    if (!id) {
+      return true;
+    }
+    return true;
   }
 
   async nbUsers() {
@@ -61,8 +53,8 @@ class DBClient {
   async put(collectionName, obj, newAttribute) {
     const db = this.client.db(this.database);
     const collection = db.collection(collectionName);
-    const documentArray = await collection.updateOne(obj, {$set : newAttribute});
-    console.log(documentArray)
+    const documentArray = await collection.updateOne(obj, { $set: newAttribute });
+    console.log(documentArray);
     return documentArray.matchedCount;
   }
 
@@ -70,9 +62,9 @@ class DBClient {
     const db = this.client.db(this.database);
     const collection = db.collection(collectionName);
     const pipeline = [
-      {$match: obj},
-      {$skip: page*20},
-      {$limit: 20}
+      { $match: obj },
+      { $skip: page * 20 },
+      { $limit: 20 },
     ];
     const documentArray = await collection.aggregate(pipeline).toArray();
     return documentArray;
