@@ -43,7 +43,7 @@ class UsersController {
     const userData = await dbClient.get('users', { _id: ObjectId(userID) });
     if (userData.length > 0) {
       const user = userData[0];
-      res.status(200).send({ id: user._id, email: user.email });
+      res.send({ id: user._id, email: user.email });
     } else {
       res.status(401).send({ error: 'Unauthorized' });
     }
