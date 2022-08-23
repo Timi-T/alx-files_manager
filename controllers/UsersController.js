@@ -29,7 +29,7 @@ class UsersController {
     const hashPwd = sha1(password);
     const document = { email, password: hashPwd };
     const user = await dbClient.add('users', document);
-    res.status(200).send({ id: user.insertedId, email });
+    res.status(201).send({ id: user.insertedId, email });
   }
 
   async getMe(req, res) {
