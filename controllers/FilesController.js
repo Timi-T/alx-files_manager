@@ -39,7 +39,7 @@ class FilesController {
       }
       let { parentId } = req.body;
       if (parentId) {
-        const parentData = dbClient.get({ parentId });
+        const parentData = dbClient.get('files', { parentId });
         if (parentData.length < 1) {
           res.status(400).send({ error: 'Parent not found' });
           return;
@@ -100,7 +100,9 @@ class FilesController {
             res.status(400).send({ error: addJob });
             return;
           }
-          const thumbnails = thumbnailJob.process(file.localPath);
+          console.log(file.localPath)
+          const thumbnails = await thumbnailJob.process(file.localPath);
+          console.log(thumbnails)
           fs.appendFile(`${file.localPath}_500`, thumbnails[0], (err) => {
             if (err) {
               console.log(err);
@@ -243,6 +245,10 @@ class FilesController {
             return;
           }
           if (!fs.existsSync(file.localPath)) {
+            res.status(404).send({ error: 'Not found' });
+            return;
+          }
+          if (!file.isPublic) {
             res.status(404).send({ error: 'Not found' });
             return;
           }

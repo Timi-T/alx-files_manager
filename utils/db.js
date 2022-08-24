@@ -54,21 +54,18 @@ class DBClient {
     const db = this.client.db(this.database);
     const collection = db.collection(collectionName);
     const documentArray = await collection.updateOne(obj, { $set: newAttribute });
-    console.log(documentArray);
     return documentArray.matchedCount;
   }
 
   async paginate(collectionName, page, obj) {
     const db = this.client.db(this.database);
     const collection = db.collection(collectionName);
-    console.log(obj)
     const pipeline = [
       { $match: obj },
       { $skip: page * 20 },
       { $limit: 20 },
     ];
     const documentArray = await collection.aggregate(pipeline).toArray();
-    console.log(documentArray.length)
     return documentArray;
   }
 }

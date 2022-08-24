@@ -27,9 +27,9 @@ class thumbnailJob {
 
   async process(imagePath) {
     await queue.process(async (job, done) => {
-      const thumbnail500 = await imageThumbnail('/Users/roadsidedev/desktop/fm_test.png', {'width': 500});
-      const thumbnail250 = await imageThumbnail('/Users/roadsidedev/desktop/fm_test.png', {'width': 250});
-      const thumbnail100 = await imageThumbnail('/Users/roadsidedev/desktop/fm_test.png', {'width': 100});
+      const thumbnail500 = await imageThumbnail(imagePath, {'width': 500});
+      const thumbnail250 = await imageThumbnail(imagePath, {'width': 250});
+      const thumbnail100 = await imageThumbnail(imagePath, {'width': 100});
       return [thumbnail500, thumbnail250, thumbnail100];
     })
   }
